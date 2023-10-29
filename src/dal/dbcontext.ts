@@ -1,14 +1,16 @@
-import { info } from 'console';
-import {Service} from 'typedi';
+import { Service, Container } from 'typedi';
 import { DataSource, DataSourceOptions, EntityManager } from "typeorm"
 
+import { LoggerService } from '../services/logger';
 import { User } from "../domain/user"
 
 @Service()
-export class AppDbContext {
-    public AppDataStore: DataSource;
+export class AppDbContext extends DataSource {
+    private loggerService = Container.get(LoggerService);
+    // public AppDataStore: DataSource;
 
-    constructor() {
+    constructor(options: DataSourceOptions) {
+
         const dbSettings ={
             type: "sqlite",
             database: ":memory:",
@@ -18,11 +20,14 @@ export class AppDbContext {
             logging: true
         } as any;
 
-        this.AppDataStore = new DataSource(dbSettings)
-        this.AppDataStore.initialize().then((value: DataSource)=>{
-            info(`In memory Db initialized`);
+        super(dbSettings);
+
+        // this.AppDataStore = new DataSource(dbSettings)
+        this.initialize().then(()=>{
+            this.loggerService.debug(`In memory Db initialized`);
+            this.loggerService.trace(`In memory Db initialized`);
             this.createSource().then((status) => {
-                info(`Db source created`);
+                this.loggerService.debug(`Db source created`);
             });
         });
     }
@@ -37,8 +42,9 @@ export class AppDbContext {
                 model.name = "admin";
                 model.password = "admin123";
 
-                this.AppDataStore.manager.save(model).then((user) => {
-                    info("user added service");
+                this.manager.save(model).then((user) => {
+                    this.loggerService.debug("user added");
+                    this.loggerService.debug(user);
                     resolve(user);
                 });
             }));
@@ -48,15 +54,16 @@ export class AppDbContext {
                 model.name = "user";
                 model.password = "user123";
 
-                this.AppDataStore.manager.save(model).then((user) => {
-                    info("user added service");
+                this.manager.save(model).then((user) => {
+                    this.loggerService.debug("user added");
+                    this.loggerService.debug(user);
                     resolve(user);
                 });
             }));
 
             return Promise.all(promises);
         } catch (err:any) {
-            console.error(`dbConnectionManager - error initializing db. Error: ${err.message}`)
+            this.loggerService.error(`error creating db source. Error: ${err.message}`)
         }
     }
 

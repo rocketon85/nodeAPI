@@ -1,27 +1,26 @@
-import { Container, Service } from 'typedi';
-import "reflect-metadata";
-import { info } from 'console';
-
+import { Container } from 'typedi';
 import express, { Response, Request, NextFunction } from "express";
 import morgan from "morgan";
-
 import mainRoute from './routes';
 import * as bodyParser from 'body-parser';
 import cors from "cors";
 import helmet from "helmet";
+import swaggerUI from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
+
 
 import  requireJwtMiddleware from './middlewares/jwt';
 import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "./utils/jwt";
 
-import swaggerUI from "swagger-ui-express";
-import swaggerJsDoc from "swagger-jsdoc";
 import { options } from "./options/swaggerOptions";
-
+import { LoggerService } from './services/logger';
 import {UserService} from './services/user';
 
 //import * as router from './routes/routes';
 
 class App {
+  private logger = Container.get(LoggerService);
+
   public app: express.Application;
  
   constructor () {
@@ -59,8 +58,8 @@ class App {
     // userService = new UserService();
     const userService = Container.get(UserService);
     userService.login("","").then((user) => {
-      info("user added route");
-      info(user);
+      this.logger.info("user added route");
+      this.logger.info(user);
     });
 
       // This route is unprotected, anybody can call it
