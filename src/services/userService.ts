@@ -1,9 +1,9 @@
 import { info } from 'console';
 import {Service, Container} from 'typedi';
 
-import { LoggerService } from '../services/logger';
-import { AppDbContext } from '../dal/dbcontext';
-import { User } from '../domain/user';
+import { LoggerService } from './loggerService';
+import { AppDbContext } from '../contexts/dbcontext';
+import { User } from '../domains/userDomain';
 
 @Service()
 export class UserService {

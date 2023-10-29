@@ -4,8 +4,6 @@ import { BaseLogger,Logger, ILogObjMeta, ISettingsParam, ILogObj } from "tslog";
 
 @Service()
 export class LoggerService<LogObj> extends Logger<ILogObj> {
-    
-
   constructor() {
     super();
 

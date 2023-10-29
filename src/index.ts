@@ -2,8 +2,8 @@
 import { Container } from 'typedi';
 
 import app from './App';
-import { AppDbContext } from './dal/dbcontext';
-import { LoggerService } from './services/logger';
+import { AppDbContext } from './contexts/dbcontext';
+import { LoggerService } from './services/loggerService';
 import { Config } from './utils/config';
 
 const config = Container.get(Config);

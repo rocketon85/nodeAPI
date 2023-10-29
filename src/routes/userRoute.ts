@@ -1,19 +1,18 @@
 import { Container, Service } from 'typedi';
 import { Router, Request, Response, NextFunction } from 'express';
-import { info } from 'console';
 
-import {UserService} from '../services/user';
-import * as Auth from '../middlewares/jwt';
-import * as token from '../utils/jwt';
+import { UserService } from '../services/userService';
+import { LoggerService } from '../services/loggerService';
 
 export class UserRouter {
-  router: Router
+  private logger = Container.get(LoggerService);
+
+  public Router: Router;
 
   constructor() {
-    this.router = Router();
+    this.Router = Router();
     this.init();
   }
-
 
   public getAll(req: Request, res: Response, next: NextFunction) {
     res.json({
@@ -21,7 +20,6 @@ export class UserRouter {
     })
   }
 
-  
   public createToken(req: Request, res: Response, next: NextFunction) {
     res.json({
       message: ""
@@ -102,12 +100,9 @@ export class UserRouter {
 
     const userService = Container.get(UserService);
 
-    // let userService: UserService;
-    // userService = new UserService();
-
     userService.login(name, password).then((user) => {
-      info("user added route");
-      info(user);
+      this.logger.info("user added route");
+      this.logger.info(user);
     })
 
     if(name == password) {
@@ -130,13 +125,12 @@ export class UserRouter {
    * endpoints.
    */
   init() {
-    this.router.get('', this.getAll);
-    this.router.post('/login', this.login);
-    this.router.post('/createToken', this.createToken);
+    this.Router.get('', this.getAll);
+    this.Router.post('/login', this.login);
+    this.Router.post('/createToken', this.createToken);
   }
 
 }
 
 const userRouter = new UserRouter();
-
-export default userRouter.router;
+export default userRouter.Router;

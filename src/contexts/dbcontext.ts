@@ -1,16 +1,14 @@
 import { Service, Container } from 'typedi';
 import { DataSource, DataSourceOptions, EntityManager } from "typeorm"
 
-import { LoggerService } from '../services/logger';
-import { User } from "../domain/user"
+import { LoggerService } from '../services/loggerService';
+import { User } from "../domains/userDomain"
 
 @Service()
 export class AppDbContext extends DataSource {
     private loggerService = Container.get(LoggerService);
-    // public AppDataStore: DataSource;
 
     constructor(options: DataSourceOptions) {
-
         const dbSettings ={
             type: "sqlite",
             database: ":memory:",
@@ -19,10 +17,8 @@ export class AppDbContext extends DataSource {
             synchronize: true,
             logging: true
         } as any;
-
         super(dbSettings);
 
-        // this.AppDataStore = new DataSource(dbSettings)
         this.initialize().then(()=>{
             this.loggerService.debug(`In memory Db initialized`);
             this.loggerService.trace(`In memory Db initialized`);
@@ -66,5 +62,4 @@ export class AppDbContext extends DataSource {
             this.loggerService.error(`error creating db source. Error: ${err.message}`)
         }
     }
-
 }

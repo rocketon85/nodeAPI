@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "../utils/jwt";
-import { info } from "console";
-/**
- * Express middleware, checks for a valid JSON Web Token and returns 401 Unauthorized if one isn't found.
- */
+
 function requireJwtMiddleware(request: Request, response: Response, next: NextFunction) {
     const unauthorized = (message: string) => response.status(401).json({
         ok: false,
