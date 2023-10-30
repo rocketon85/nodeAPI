@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "../utils/jwt";
+import { Container } from 'typedi';
+
+import { JwtOption } from '../options/jwtOption';
 
 function requireJwtMiddleware(request: Request, response: Response, next: NextFunction) {
+    var jwtOption = Container.get(JwtOption);
+
     const unauthorized = (message: string) => response.status(401).json({
         ok: false,
         status: 401,
@@ -20,7 +25,7 @@ function requireJwtMiddleware(request: Request, response: Response, next: NextFu
         unauthorized(`Required ${requestHeader} header not found.`);
         return;
     }
-    const SECRET_KEY_HERE = "1dad12k313jn1n1k3";
+    const SECRET_KEY_HERE = jwtOption.KEY;
     const decodedSession: DecodeResult = decodeSession(SECRET_KEY_HERE, header.replace(responseHeader,""));
     
     if (decodedSession.type === "integrity-error" || decodedSession.type === "invalid-token") {

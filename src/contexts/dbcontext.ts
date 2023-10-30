@@ -2,7 +2,7 @@ import { Service, Container } from 'typedi';
 import { DataSource, DataSourceOptions, EntityManager } from "typeorm"
 
 import { LoggerService } from '../services/loggerService';
-import { User } from "../domains/userDomain"
+import { UserDomain } from "../domains/userDomain"
 
 @Service()
 export class AppDbContext extends DataSource {
@@ -13,7 +13,7 @@ export class AppDbContext extends DataSource {
             type: "sqlite",
             database: ":memory:",
             dropSchema: false,
-            entities: [User],
+            entities: [UserDomain],
             synchronize: true,
             logging: true
         } as any;
@@ -34,7 +34,7 @@ export class AppDbContext extends DataSource {
             var promises = [];
 
             promises.push(new Promise((resolve, reject) => {
-                const model = new User();
+                const model = new UserDomain();
                 model.name = "admin";
                 model.password = "admin123";
 
@@ -46,7 +46,7 @@ export class AppDbContext extends DataSource {
             }));
             
             promises.push(new Promise((resolve, reject) => {
-                const model = new User();
+                const model = new UserDomain();
                 model.name = "user";
                 model.password = "user123";
 

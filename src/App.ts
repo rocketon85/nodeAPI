@@ -51,28 +51,6 @@ class App {
     // this.App.use("/protected", requireJwtMiddleware);
     this.App.use(requireJwtMiddleware);
 
-
-    // Set up an HTTP Post listener at /sessions, which will "log in" the caller and return a JWT 
-    this.App.post("/api/user/authenticate", (req: Request, res: Response) => {
-    
-    const userService = Container.get(UserService);
-    userService.login("","").then((user) => {
-      this.logger.info("user added route");
-      this.logger.info(user);
-    });
-
-      // This route is unprotected, anybody can call it
-      const SECRET_KEY_HERE = "1dad12k313jn1n1k3";
-      // TODO: Validate username/password
-      const session = encodeSession(SECRET_KEY_HERE, {
-          id: 1,
-          username: "some user",
-          dateCreated: new Date().getMilliseconds()        
-      });
-      
-      res.status(201).json(session);
-    });
-
     // Set up an HTTP Get listener at /protected. The request can only access it if they have a valid JWT token
     this.App.get("/protected", (req: Request, res: Response) => {
       // The auth middleware protects this route and sets res.locals.session which can be accessed here

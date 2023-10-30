@@ -1,8 +1,10 @@
-import { Container, Service } from 'typedi';
+import { Container } from 'typedi';
 import { Router, Request, Response, NextFunction } from 'express';
 
-import { UserService } from '../services/userService';
+import { UserController } from '../controllers/userController';
 import { LoggerService } from '../services/loggerService';
+import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "../utils/jwt";
+import { JwtOption } from '../options/jwtOption';
 
 export class UserRouter {
   private logger = Container.get(LoggerService);
@@ -14,17 +16,6 @@ export class UserRouter {
     this.init();
   }
 
-  public getAll(req: Request, res: Response, next: NextFunction) {
-    res.json({
-      message: 'Hello World User!'
-    })
-  }
-
-  public createToken(req: Request, res: Response, next: NextFunction) {
-    res.json({
-      message: ""
-    })
-  }
 
   /**
  * @swagger
@@ -91,43 +82,43 @@ export class UserRouter {
  *              items:
  *                $ref: '#/components/schemas/Task'
  */
-  public login(req: Request, res: Response) {
-    let name: string;
-    let password: string;
-     
-    name = req.body["name"];
-    password = req.body["password"];
+  public authenticate(req: Request, res: Response, next: NextFunction) {
+    let name:string = req.body["username"];
+    let password:string = req.body["password"];
+    
+    var userController = new UserController();
 
-    const userService = Container.get(UserService);
+    userController.login(name, password).then((user) => {
+      var jwtOption = Container.get(JwtOption);
 
-    userService.login(name, password).then((user) => {
-      this.logger.info("user added route");
-      this.logger.info(user);
-    })
+      // This route is unprotected, anybody can call it
+      const SECRET_KEY_HERE = jwtOption.KEY;
+      // TODO: Validate username/password
+      const session = encodeSession(SECRET_KEY_HERE, {
+          id: user.id,
+          username: user.name,
+          dateCreated: new Date().getMilliseconds()        
+      });
 
-    if(name == password) {
-        res.status(200)
-            .send({
-                message: 'Success',
-                status: res.status
-            });
-    }else{
-        res.status(500)
-            .send({
-                message: "sad",
-                status: res.status,
-            });
-    }
+      res.status(200).json(session);
+    } ).catch((reason) => {
+      res.status(401).json({
+        ok: false,
+        status: 401,
+        message: reason
+      });
+    });
   }
 
-  /**
-   * Take each handler, and attach to one of the Express.Router's
-   * endpoints.
-   */
+  public getAll(req: Request, res: Response, next: NextFunction) {
+    res.json({
+      message: 'Hello World User!'
+    })
+  }
+
   init() {
     this.Router.get('', this.getAll);
-    this.Router.post('/login', this.login);
-    this.Router.post('/createToken', this.createToken);
+    this.Router.post('/authenticate', this.authenticate);
   }
 
 }

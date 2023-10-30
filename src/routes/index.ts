@@ -23,7 +23,7 @@ export class MainRouter {
       });
     });
 
-    this.Router.use('/user', UserRouter);
+    this.Router.use('/api/user', UserRouter);
   }
 }
 

@@ -1,11 +1,9 @@
-import { info } from 'console';
 import {Service, Container} from 'typedi';
 
 import { LoggerService } from './loggerService';
 import { AppDbContext } from '../contexts/dbcontext';
-import { User } from '../domains/userDomain';
+import { UserDomain } from '../domains/userDomain';
 
-@Service()
 export class UserService {
     private logger = Container.get(LoggerService);
     private dbContext = Container.get(AppDbContext);
@@ -13,16 +11,20 @@ export class UserService {
     constructor() {
     }
 
-    public async login(username:string, password:string): Promise<User> {
+    public async login(username:string, password:string): Promise<UserDomain> {
         return new Promise((resolve, reject) => {
-            const model = new User();
-            model.name = "Me and Bears";
-            model.password = "I am near polar bears";
-    
-            this.dbContext.manager.save(model).then((user) => {
-                info("user added service");
-                resolve(user);
-            });
+            var userRepository = this.dbContext.manager.getRepository(UserDomain);
+
+            userRepository.findOneBy({name: username, password: password}).then((user) => {
+                if(user == null){
+                     reject("not found");
+                }else{
+                    this.logger.info("user founded.");
+                    resolve(user);
+                }
+            }).catch((reason) => {
+                reject(reason);
+            })
         })
     }
 }

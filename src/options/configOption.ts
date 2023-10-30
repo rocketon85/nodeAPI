@@ -1,11 +1,10 @@
-import { info } from 'console';
-import {Service, Container} from 'typedi';
+import { Service } from 'typedi';
 
 const dotenv = require('dotenv');
 const path = require('path');
 
 @Service()
-export class Config {
+export class ConfigOption {
 
     constructor() {
         dotenv.config({
