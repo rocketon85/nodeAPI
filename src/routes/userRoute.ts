@@ -3,12 +3,11 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 import { UserController } from '../controllers/userController';
 import { LoggerService } from '../services/loggerService';
+import { LocalizationService } from '../services/localizationService';
 import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "../utils/jwt";
 import { JwtOption } from '../options/jwtOption';
 
 export class UserRouter {
-  private logger = Container.get(LoggerService);
-
   public Router: Router;
 
   constructor() {
@@ -85,7 +84,8 @@ export class UserRouter {
   public authenticate(req: Request, res: Response, next: NextFunction) {
     let name:string = req.body["username"];
     let password:string = req.body["password"];
-    
+    const logger = Container.get(LoggerService);
+    const localization = Container.get(LocalizationService);
     var userController = new UserController();
 
     userController.login(name, password).then((user) => {
@@ -99,7 +99,7 @@ export class UserRouter {
           username: user.name,
           dateCreated: new Date().getMilliseconds()        
       });
-
+      logger.info(localization.__('Hello'));
       res.status(200).json(session);
     } ).catch((reason) => {
       res.status(401).json({

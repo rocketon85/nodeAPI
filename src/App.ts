@@ -8,18 +8,14 @@ import helmet from "helmet";
 import swaggerUI from "swagger-ui-express";
 import swaggerJsDoc from "swagger-jsdoc";
 
-
-import  requireJwtMiddleware from './middlewares/jwtMiddleware';
+import requireJwtMiddleware from './middlewares/jwtMiddleware';
+import requireI18nMiddleware from './middlewares/i18nMiddleware';
 import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, checkExpirationStatus} from "./utils/jwt";
 
 import { swaggerOption } from "./options/swaggerOption";
 import { LoggerService } from './services/loggerService';
-import { UserService } from './services/userService';
-
-//import * as router from './routes/routes';
 
 class App {
-  private logger = Container.get(LoggerService);
 
   public App: express.Application;
  
@@ -47,9 +43,19 @@ class App {
     this.App.use(helmet());
     this.App.use(cors());
     this.App.use(express.json());
+
+    this.App.use(requireI18nMiddleware);
+    this.App.use(requireJwtMiddleware);
+
     this.App.use(mainRoute);
     // this.App.use("/protected", requireJwtMiddleware);
-    this.App.use(requireJwtMiddleware);
+
+  
+    this.App.get('/default', function (req, res, next) {
+      var logger = Container.get(LoggerService);
+
+      res.status(200).json({ message: `Your language is ${res.__('Hello World')}` });
+    })
 
     // Set up an HTTP Get listener at /protected. The request can only access it if they have a valid JWT token
     this.App.get("/protected", (req: Request, res: Response) => {
