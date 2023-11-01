@@ -2,9 +2,27 @@ export const swaggerOption = {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "Tasks API",
+        title: "NodeJS API",
         version: "1.0.0",
-        description: "A simple express library API",
+        description: "NodeJS API example, for more information go to https://github.com/rocketon85/nodeAPI.",
+      },
+      components: {
+        securitySchemes: {
+          // ApiKeyAuth:{
+          //   type: "apiKey",
+          //   in: "header",
+          //   name: "X-API-Key"
+          // },
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            desription: "Enter Bearer token"
+          }
+        }
+      },
+      security: {
+        bearerAuth: []    
       },
       servers: [
         {
