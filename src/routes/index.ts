@@ -11,18 +11,6 @@ export class MainRouter {
   }
 
   init() {
-    // placeholder route handler
-    this.Router.get('/', (req, res, next) => {
-      res.json({
-        message: 'Hello World!'
-      });
-    });
-    this.Router.get('/a', (req, res, next) => {
-      res.json({
-        message: 'Hello World a!'
-      });
-    });
-
     this.Router.use('/api/user', UserRouter);
   }
 }

@@ -3,10 +3,13 @@ import {DecodeResult, ExpirationStatus, Session, decodeSession, encodeSession, c
 import { Container } from 'typedi';
 
 import { JwtOption } from '../options/jwtOption';
+import { LoggerService } from "../services/loggerService";
 
 function requireJwtMiddleware(request: Request, response: Response, next: NextFunction) {
     var jwtOption = Container.get(JwtOption);
+    var logger = Container.get(LoggerService);
 
+    logger.trace("jwtMiddleware");
     const unauthorized = (message: string) => response.status(401).json({
         ok: false,
         status: 401,

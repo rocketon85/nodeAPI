@@ -1,4 +1,6 @@
 {
 	"Hello World": "Hello World",
-  "Hello": "Hello"
+  "Hello": "Hello",
+  "User.NotFound": "User not found",
+  "User.Found": "User found"
 }
